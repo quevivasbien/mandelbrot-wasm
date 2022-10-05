@@ -44,13 +44,8 @@ const order_log = [];
 
 function empty_log() {
     for (let i = 0; i < order_log.length; i++) {
-        if (order_log[i].order === last_order_received + 1) {
-            update_canvas(
-                order_log[i].cells,
-                order_log[i].width,
-                order_log[i].height,
-                order_log[i].offset
-            );
+        if (order_log[i].original.order === last_order_received + 1) {
+            update_canvas(order_log[i]);
             last_order_received++;
             order_log.splice(i, 1);
             // look for next order
@@ -64,13 +59,8 @@ function empty_log() {
 
 function on_worker_message(event) {
     if (event.data.type === "result") {
-        if (event.data.order === last_order_received + 1) {
-            update_canvas(
-                event.data.cells,
-                event.data.width,
-                event.data.height,
-                event.data.offset
-            );
+        if (event.data.original.order === last_order_received + 1) {
+            update_canvas(event.data);
             last_order_received++;
         }
         else {
@@ -92,16 +82,14 @@ function init_workers() {
     }
 }
 
-function update_canvas(cells, width, height, offset) {
-    console.log("offset: ", offset);
-    console.log(width, height);
-    let img_data = ctx.createImageData(width, height);
-    img_data.data.set(cells, 0);
+function update_canvas(data) {
+    let img_data = ctx.createImageData(
+        data.original.width, data.original.height
+    );
+    img_data.data.set(data.cells, 0);
     // figure out horizontal and vertical offsets
-    const start_x = (offset % (canvas.width * 4)) / 4;
-    console.log(start_x);
-    const start_y = Math.floor(offset / (canvas.width * 4));
-    console.log(start_y);
+    const start_x = canvas.width * (data.original.x0 - pos.x0) / (pos.x1 - pos.x0);
+    const start_y = canvas.height * (data.original.y0 - pos.y0) / (pos.y1 - pos.y0);
     ctx.putImageData(img_data, start_x, start_y);
 }
 
@@ -122,7 +110,10 @@ async function find_ready_worker() {
     return worker_id;
 }
 
-async function compute_cells(width, height, x0, y0, x1, y1, offset) {
+async function compute_cells(
+    width, height,
+    x0, y0, x1, y1
+) {
     let worker_id = await find_ready_worker();
     workers[worker_id].ready = false;
     workers[worker_id].worker.postMessage({
@@ -134,7 +125,6 @@ async function compute_cells(width, height, x0, y0, x1, y1, offset) {
         y0: y0,
         x1: x1,
         y1: y1,
-        offset: offset
     });
 }
 
@@ -148,8 +138,7 @@ function compute_all() {
         let my_y1 = my_y0 + my_row_step * vert_scale;
         compute_cells(
             canvas.width, my_row_step,
-            pos.x0, my_y0, pos.x1, my_y1,
-            i * row_step * canvas.width * 4
+            pos.x0, my_y0, pos.x1, my_y1
         );
     }
 }
@@ -164,8 +153,7 @@ function move_down() {
     const offset = (canvas.height - move_rows) * canvas.width * 4;
     compute_cells(
         canvas.width, move_rows,
-        pos.x0, pos.y1 - move_amt, pos.x1, pos.y1,
-        offset
+        pos.x0, pos.y1 - move_amt, pos.x1, pos.y1
     );
 }
 
@@ -178,8 +166,7 @@ function move_up() {
     ctx.putImageData(img_data, 0, move_rows);
     compute_cells(
         canvas.width, move_rows,
-        pos.x0, pos.y0, pos.x1, pos.y0 + move_amt,
-        0
+        pos.x0, pos.y0, pos.x1, pos.y0 + move_amt
     );
 }
 
@@ -190,11 +177,9 @@ function move_right() {
     pos.x1 += move_amt;
     const img_data = ctx.getImageData(move_cols, 0, canvas.width - move_cols, canvas.height);
     ctx.putImageData(img_data, 0, 0);
-    const offset = (canvas.width - move_cols) * 4;
     compute_cells(
         move_cols, canvas.height,
-        pos.x1 - move_amt, pos.y0, pos.x1, pos.y1,
-        offset
+        pos.x1 - move_amt, pos.y0, pos.x1, pos.y1
     );
 }
 
@@ -207,8 +192,7 @@ function move_left() {
     ctx.putImageData(img_data, move_cols, 0);
     compute_cells(
         move_cols, canvas.height,
-        pos.x0, pos.y0, pos.x0 + move_amt, pos.y1,
-        0
+        pos.x0, pos.y0, pos.x0 + move_amt, pos.y1
     );
 }
 
@@ -273,4 +257,4 @@ document.onkeydown = function(e) {
 }
 
 init_workers();
-compute_all(-2, -1.5, 1, 1.5);
+compute_all();

@@ -1,12 +1,14 @@
 importScripts("./pkg/mandelbrot_wasm.js");
 
-const { compute_grid } = wasm_bindgen;
+const { compute_grid, Colors } = wasm_bindgen;
 
 let my_id;
+let colors;
 
 async function init_worker(id) {
     my_id = id;
     await wasm_bindgen("./pkg/mandelbrot_wasm_bg.wasm");
+    colors = Colors.default();
 
     postMessage({ id: my_id, type: "ready" });
 }
@@ -16,11 +18,11 @@ onmessage = function(event) {
         init_worker(event.data.id);
     }
     else if (event.data.type === "compute") {
-        console.log("computing in worker", my_id);
-        const { _, order, width, height, x0, y0, x1, y1, offset } = event.data;
         const cells = compute_grid(
-            width, height, x0, y0, x1, y1
+            event.data.width, event.data.height,
+            event.data.x0, event.data.y0, event.data.x1, event.data.y1,
+            colors
         );
-        postMessage({ id: my_id, order: order, type: "result", cells: cells, width: width, height: height, offset: offset });
+        postMessage({ id: my_id, type: "result", cells: cells, original: event.data });
     }
 }
