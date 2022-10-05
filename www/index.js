@@ -24,18 +24,28 @@ function scale_pos_to_canvas(pos) {
 }
 
 let pos = scale_pos_to_canvas({
-    x0: -2.0,
-    y0: -1.5,
-    x1: 1.0,
-    y1: 1.5,
+    x0: -2.5,
+    y0: -2.0,
+    x1: 1.5,
+    y1: 2.0,
 });
 
+let resizing = false;
 window.addEventListener("resize", () => {
+    if (resizing) {
+        return;
+    }
     resizing = true;
     canvas.width = 0.8 * window.innerWidth;
     canvas.height = 0.8 * window.innerHeight;
     pos = scale_pos_to_canvas(pos);
-    setTimeout(compute_all, 500);
+    setTimeout(
+        () => {
+            resizing = false;
+            compute_all();
+        },
+        500
+    )
 });
 
 let current_order = 0;
@@ -128,7 +138,7 @@ async function compute_cells(
     });
 }
 
-function compute_all() {
+function compute_all(retry = false) {
     const row_step = Math.floor(canvas.height / n_workers);
     const row_remainder = canvas.height % n_workers;
     const vert_scale = (pos.y1 - pos.y0) / canvas.height;
@@ -197,6 +207,10 @@ function move_left() {
 }
 
 function zoom_in() {
+    // check that all workers are ready before allowing this
+    if (workers.some(w => !w.ready)) {
+        return;
+    }
     // create temporary zoomed-in image
     const image_center = ctx.getImageData(
         canvas.width / (ZOOM_STEP * 2),
@@ -225,6 +239,10 @@ function zoom_in() {
 }
 
 function zoom_out() {
+    // check that all workers are ready before allowing this
+    if (workers.some(w => !w.ready)) {
+        return;
+    }
     ctx.drawImage(
         canvas, 0, 0,
         canvas.width, canvas.height,

@@ -3,6 +3,9 @@ name = "mandelbrot-wasm"
 version = "0.1.0"
 edition = "2021"
 
+[build]
+target = "wasm64-unknown-unknown"
+
 [lib]
 crate-type = ["cdylib"]
 
