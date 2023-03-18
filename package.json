@@ -6,12 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build:wasm": "wasm-pack build ./rust --target no-modules --out-name wasm --out-dir ../wasm",
+    "deploy": "npm run build:wasm && gh-pages -d .",
     "preview": "vite preview"
   },
   "devDependencies": {
+    "gh-pages": "^5.0.0",
     "vite": "^4.2.0"
-  },
-  "dependencies": {
-    "gh-pages": "^5.0.0"
   }
 }
