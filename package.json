@@ -1,0 +1,17 @@
+{
+  "name": "mandelbrot-wasm",
+  "private": true,
+  "version": "0.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "vite",
+    "build:wasm": "wasm-pack build ./rust --target no-modules --out-name wasm --out-dir ../wasm",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^4.2.0"
+  },
+  "dependencies": {
+    "gh-pages": "^5.0.0"
+  }
+}
