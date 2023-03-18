@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Mandelbrot explorer</title>
+  </head>
+  <body class="bg-black">
+    <div id="app">
+      <canvas id="canvas" class="mx-auto block border p-4 bg-gray-900 border-gray-500 rounded-lg"></canvas>
+      <!-- movement controls -->
+      <div class="items-center contents-center text-center p-4 space-y-4 m-4">
+        <div class="flex flex-row justify-center space-x-4">
+          <button id="zoom-out" title="keyboard: q or -" class="p-3 text-white bg-gray-700 border-gray-500 rounded-lg">-</button>
+          <button id="move-up" title="keyboard: w or up arrow" class="p-4 text-white bg-gray-700 border-gray-500 rounded-lg">Up</button>
+          <button id="zoom-in" title="keyboard: e or +" class="p-3 text-white bg-gray-700 border-gray-500 rounded-lg">+</button>
+        </div>
+        <div class="flex flex-row justify-center space-x-4">
+          <button id="move-left" title="keyboard: a or left arrow" class="p-4 text-white bg-gray-700 border-gray-500 rounded-lg">Left</button>
+          <button id="move-down" title="keyboard: s or down arrow" class="p-4 text-white bg-gray-700 border-gray-500 rounded-lg">Down</button>
+          <button id="move-right" title="keyboard: d or right arrow" class="p-4 text-white bg-gray-700 border-gray-500 rounded-lg">Right</button>
+        </div>
+      </div>
+      <!-- color controls -->
+      <div class="items-center contents-center text-center p-4 space-y-4">
+        <!-- colors -->
+        <div>
+          <input type="color" id="color-0" />
+          <input type="color" id="color-1" />
+          <input type="color" id="color-2" />
+          <input type="color" id="color-3" />
+          <input type="color" id="color-4" />
+          <input type="color" id="color-5" />
+        </div>
+        <button id="random-colors" class="p-4 text-white bg-gray-700 border-gray-500 rounded-lg">Randomize colors</button>
+      </div>
+    </div>
+    <script src="/main.js"></script>
+  </body>
+</html>

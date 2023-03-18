@@ -11,6 +11,17 @@ pub struct Colors(Vec<f64>, Vec<f64>, Vec<f64>, Vec<f64>, Vec<f64>, Vec<f64>);
 
 #[wasm_bindgen]
 impl Colors {
+    pub fn new(
+        c1: Vec<f64>,
+        c2: Vec<f64>,
+        c3: Vec<f64>,
+        c4: Vec<f64>,
+        c5: Vec<f64>,
+        c6: Vec<f64>,
+    ) -> Colors {
+        Colors(c1, c2, c3, c4, c5, c6)
+    }
+
     pub fn default() -> Colors {
         Colors(
             vec![0., 0., 0.],  // black
