@@ -17,7 +17,7 @@ class WorkerWrapper {
   constructor(id) {
     this.id = id;
     this.ready = false;
-    this.worker = new Worker('worker.js');
+    this.worker = new Worker('./worker.js');
     this.worker.onmessage = this.receiveMessage.bind(this);
   }
 
